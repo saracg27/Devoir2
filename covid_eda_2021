@@ -1,3 +1,53 @@
-import csv
-fichier_csv = open('COVID19.csv', newline='')
-lecteur = csv.reader(fichier_csv)
+# Importer les modules
+import csv                          
+import pandas as pd                
+import matplotlib.pyplot as plt     
+import matplotlib.ticker as ticker  # pour les paramètres avancées
+
+# Charger le fichier 
+df = pd.read_csv('COVID19.csv')
+
+# Calcules les paramètres à afficher
+ma5 = df['Nb_Nvx_Cas'].rolling(window=5).mean() #moyenne mobile m5
+diff = ma5.diff() #dérivée de la moyenne mobile sur 5 jours
+ma7 = diff.rolling(window=7).mean() #moyenne mobile de la derivée
+df['jours'] = range(1, len(df)+1) # colonne pour compter les journées et afficher leur addition dans l'axe x
+
+# Créer une nouvelle figure avec deux panneaux 
+fig, axs = plt.subplots(nrows=2, sharex=False, figsize=(12, 6)) # paramètres de la figure, approx 12 par 6 po
+tick_locations = range(0, len(df['jours'])+51, 50) # ajouter un peu plus pour arriver à afficher le 400
+tick_labels = range(0, len(df['jours'])+51, 50)
+plt.xticks(tick_locations, tick_labels)
+
+# Plot superieur
+axs[0].set_title(df.iloc[-1]['Date'])      # Titre du premier graphique avec la dernière journée (last value?)
+axs[0].plot(df['jours'], df['Nb_Nvx_Cas'], linewidth=0.75)    # Ligne de Nb_Nvx_Cas sur le premier graphique
+axs[0].plot(df['jours'], ma5, color='red', linewidth=0.75)    # Ligne de ma5 sur le premier graphique
+axs[0].tick_params(axis='x', labelsize=8)    # Taille de police des graduations de l'axe des x sur le premier graphique
+axs[0].tick_params(axis='y', labelsize=8)    # Taille de police des graduations de l'axe des y sur le premier graphique
+
+# Plot inferieur
+axs[1].plot(df['Date'], ma7, linewidth=0.75)    # Ligne de ma7 sur le deuxième graphique
+axs[1].grid(True, which='both', linestyle='-', alpha=0.5)    # Ajouter une grille sur le deuxième graphique
+axs[1].yaxis.set_major_locator(ticker.MultipleLocator(25))    # Espacement des graduations de l'axe des y sur le deuxième graphique
+axs[1].tick_params(axis='x', labelsize=8)    # Taille de police des graduations de l'axe des x sur le deuxième graphique
+axs[1].tick_params(axis='y', labelsize=8)    # Taille de police des graduations de l'axe des y sur le deuxième graphique
+
+plt.show()    # Afficher les graphiques
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
