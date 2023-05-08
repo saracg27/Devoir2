@@ -1,0 +1,3 @@
+import csv
+fichier_csv = open('COVID19.csv', newline='')
+lecteur = csv.reader(fichier_csv)
